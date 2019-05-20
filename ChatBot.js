@@ -1,17 +1,26 @@
 class ChatBot{
-
-	constructor(nom, cerveau){
-		this.nom = nom;
-		this.cerveau = cerveau;
-		this.interfaces = new Map();
-	}
-
-	addInterfaces(interface){
-		this.interfaces.push(interface);
-	}
-
-	delInterface(interface){
-		let ind = this.interfaces.indexOf(interface);
-	}
-
+  constructor(data){   //id,title,comment,tags
+    if(undefined != data.id) {
+      this.id = data.id;
+    } else {
+      this.id = parseInt(    Math.floor(Math.random() * Math.floor(100000))     );
+    }
+    if(undefined != data.nom) {
+      this.nom= data.nom;
+    } else {
+      this.nom= "";
+    }
+    if(undefined != data.cerveau) {
+      this.cerveau = data.cerveau;
+    } else {
+      this.cerveau = "";
+    }
+    if(undefined != data.interfaces) {
+      this.interfaces = data.interfaces;
+    } else {
+      this.interfaces = [];
+    }
+  }
 }
+
+module.exports = ChatBot;

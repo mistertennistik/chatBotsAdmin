@@ -1,0 +1,23 @@
+[
+	{
+		"id":1,
+		"nom" : "Bot1",
+		"cerveau" :"bot1.rive",
+		"interfaces" : [
+			"Discord", "OwnUX"
+
+		]
+	},
+	{	"id":2,
+		"nom" : "Bot2",
+		"cerveau" :"bot2.rive",
+		"interfaces" : [
+			"OwnUX"
+
+		]
+	}
+
+
+
+
+]
