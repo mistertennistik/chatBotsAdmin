@@ -6,6 +6,7 @@
   "author": "jrmdel",
   "dependencies": {
     "discord.io": "github:woor/discord.io#gateway_v6",
+    "rivescript": "^2.0.0",
     "winston": "^3.2.1"
   }
 }
