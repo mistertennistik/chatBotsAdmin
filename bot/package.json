@@ -1,0 +1,11 @@
+{
+  "name": "Steeve",
+  "version": "1.0.0",
+  "description": "We are the champions, my friend",
+  "main": "main.js",
+  "author": "jrmdel",
+  "dependencies": {
+    "discord.io": "github:woor/discord.io#gateway_v6",
+    "winston": "^3.2.1"
+  }
+}
