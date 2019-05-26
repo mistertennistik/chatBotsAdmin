@@ -1,5 +1,5 @@
 class ChatBot{
-  constructor(data){   //id,title,comment,tags
+  constructor(data){ 
     if(undefined != data.id) {
       this.id = data.id;
     } else {

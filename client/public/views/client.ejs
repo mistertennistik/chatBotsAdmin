@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>
+   ChatbotAdministration
+ </title>
+</head>
+<link rel = "stylesheet"
+type = "text/css"
+href = "style.css" />
+<body>
+
+  <div id="createForm">
+
+    <div class="form-example">
+      <label for="name">Enter your name: </label>
+      <input type="text" name="name" id="name" required>
+    </div>
+
+
+    <select id="personnality">
+      <option value="b1">Classic Bot</option>
+      <option value="b2">Personnality 1</option>
+      <option value="b3">Personnality 2</option>
+      <option value="b4">Personnality 3</option>
+    </select>
+
+    <p>Choose interfaces for your ChatBot</p>
+
+    <div>
+      <input type="checkbox" id="OwnUX" name="OwnUX">
+      <label for="OwnUX">OwnUX</label>
+    </div>
+
+    <div>
+      <input type="checkbox" id="Discord" name="Discord">
+      <label for="Discord">Discord</label>
+    </div>
+    <div class="form-example">
+      <input id="createMyBot" type="submit" value="createMyBot">
+    </div>
+  </div>
+
+  <div id="div_allBots">
+    <input id="input_getAllBots" type="submit" value="Get all bots !">
+
+  </div>
+
+
+
+
+
+</body>
+
+<script src="js/proxyClient.js">
+
+
+
+</script>
+
+
+</html>
+
+
+

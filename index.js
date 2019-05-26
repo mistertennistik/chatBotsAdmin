@@ -44,7 +44,7 @@ app.use(bodyParser.json());
 
 app.get('/chatbots', cors(corsOptions),function(req, res) {
   res.setHeader('Content-Type', 'application/json');
-  res.json(chatbots.getChatBot());
+  res.json(chatbots.getChatBots());
 });
 
 app.get('/chatbot/:id', cors(corsOptions),function(req, res) {
@@ -110,9 +110,9 @@ app.use(function(req, res, next){
     res.send(404, 'Page introuvable !');
 });
 
-app.listen(8082, (err,data) => {
+app.listen(8080, (err,data) => {
 	if(err==undefined){
-		console.log(`app listening on port ${8082}!`);
+		console.log(`app listening on port ${8080}!`);
 	}else{
 		console.log(`ERROR : ${err}`);
 	}
