@@ -78,6 +78,7 @@ app.put('/chatbot/:id', cors(corsOptions), function(req, res) {
     res.setHeader('Content-Type', 'application/json');
     if(req.is('json')) //on devrait toujours tester le type et aussi la taille!
     {
+        console.log(req.body);
 		    var chatbot = chatbots.updateChatBot(req.body);
         if(undefined==chatbot){
           res.send(404, 'Page introuvable !');

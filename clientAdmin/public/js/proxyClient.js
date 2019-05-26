@@ -18,6 +18,7 @@ const deleteBotURL="http://localhost:8080/chatbot/";
 ***/
 
 let botToPost = {
+    "id" : null,
     "nom" : "",
     "cerveau" : "", 
     "interfaces" : []
@@ -52,7 +53,7 @@ function getAllBots(){
 
   if(invocation){
     invocation.open('GET', getBotsURL, true);
-    invocation.onreadystatechange = handler;
+    invocation.onreadystatechange = getAllBotsHandler;
     invocation.send(null);
   }else{
     console.error("No Invocation TookPlace At All");
@@ -61,7 +62,7 @@ function getAllBots(){
 
 function postBot(){
 
-  console.log("on est dans le post $$$$$$$$$$$$$")
+  console.log("******** on est dans le post $$$$$$$$$$$$$")
 
   if(invocation){
     invocation.open('POST', postBotURL, true);
@@ -77,12 +78,12 @@ function putBot(id){ // A faire
     invocation.open('PUT', putBotURL+id, true);
     invocation.setRequestHeader('Content-Type', 'application/json');
     invocation.onreadystatechange = handler;
-    invocation.send(JSON.stringify(botToPut));
+    invocation.send(JSON.stringify(botToPost));
   }else{
     console.error("No Invocation TookPlace At All");
   }
 }
-function deleteTask(id){
+function deleteBot(id){
   if(invocation){
     invocation.open('DELETE', deleteBotURL+id, true);
     invocation.onreadystatechange = handler;
@@ -93,6 +94,28 @@ function deleteTask(id){
 }
 
 
+
+function getAllBotsHandler(evtXHR){
+  if (invocation.readyState == 4){
+    if (invocation.status == 200){
+  
+  try{
+          let response = JSON.stringify(JSON.parse(invocation.responseText),null,4);
+          showAllBots(response);
+
+
+
+  }catch(err){
+    console.log("invocation.responseText "+invocation.responseText);  
+  }
+      
+    }else{
+      console.error("Invocation Errors Occured " + invocation.readyState + " and the status is " + invocation.status);
+    }
+  }else{
+    console.log("currently the application is at" + invocation.readyState);
+  }
+}
 
 function handler(evtXHR){
   if (invocation.readyState == 4){
@@ -120,17 +143,41 @@ function handler(evtXHR){
 
 
 
-document.getElementById('createMyBot').addEventListener('click',initialiseBot);
-//document.getElementById('updateMyBot').addEventListener('click',updateBot);
+document.getElementById('createMyBot').addEventListener('click',createBot);
+document.getElementById('input_updateBot').addEventListener('click',updateBot);
 document.getElementById('input_getAllBots').addEventListener('click', getAllBots);
+document.getElementById('input_updateBot').addEventListener('click',updateBot);
+document.getElementById('input_deleteBot').addEventListener('click',beforeDeleteBot);
 
+
+
+function createBot(){
+  initialiseBot("post");
+}
 function updateBot(){
+  //document.getElementById('div_updateBot').innerHTML = "";
+  let id = document.getElementById('input_botID').value;
 
+  if(id==null){
+    document.getElementById('div_updateBot').innerHTML = "ID required";
+  }else{
+    initialiseBot("put",id);
+  }
+}
+
+function beforeDeleteBot(){
+  let id = document.getElementById('input_botID').value;
+  deleteBot(id);
 }
 
 
 
-function initialiseBot(){
+function showAllBots(jsonBots){
+  console.log("$$$$$$$$$")
+  document.getElementById('pre_allBots').innerHTML = jsonBots;
+}
+
+function initialiseBot(postOrPut,id=9999999999999){
   //récupère le nom du bot
   botToPost.nom = document.getElementById("name").value;
 
@@ -140,6 +187,7 @@ function initialiseBot(){
   //récupère les interfaces
   let interface1 = document.getElementById("OwnUX");
   let interface2 = document.getElementById("Discord");
+  botToPost.interfaces = [];
   if (interface1.checked) {
       botToPost.interfaces.push("OwnUX")
       //console.log("La case OwnUX est cochée");
@@ -154,6 +202,12 @@ function initialiseBot(){
     console.log("<<<<<<<<< BOT INITIALISÉ >>>>>>>>>>>");
     console.log(botToPost);
 
-    postBot();
+    if(postOrPut=="post"){
+      postBot();
+    }else{//on veut put
+      botToPost.id=parseInt(id);
+      putBot(id);
+    }
+    
     
 }
