@@ -6,7 +6,8 @@ const Chatbots = require('./Chatbots.js');
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
-
+var IntDiscord = require('./clientAdmin/InterfaceDiscord.js');
+var IntRive = require('./clientAdmin/InterfaceRiveScript.js');
 
 var chatbots = new Chatbots();
 /*
@@ -66,7 +67,7 @@ app.post('/chatbot', cors(corsOptions), function(req, res) {
     if(req.is('json')) //on devrait toujours tester le type et aussi la taille!
     {
       
-		    var chatbot = chatbots.addChatBot(req.body);
+		    //var chatbot = chatbots.addChatBot(req.body);
         res.setHeader('Content-Type', 'application/json');
         res.json(chatbot);
         console.log("Done adding "+JSON.stringify(chatbot) );
@@ -120,3 +121,32 @@ app.listen(8080, (err,data) => {
 	}
     
   });
+
+
+
+/*
+var IntDiscord = require('./clientAdmin/InterfaceDiscord.js');
+var IntRive = require('./clientAdmin/InterfaceRiveScript.js');
+*/
+function initChatbotAndInterfaces(infoChatbot){
+  let listInterface = infoChatbot.interfaces;
+  let listInterfacesToPush = [];
+  //mettre dans l'objet chatbot le bon chemin vers son cerveau correspondant à sa personnalité 
+  let cerv = "./bot/brain1.rive";
+  //token que l'on va récupérer avec notre fonction ProchainTokenLibre()
+  let tok = "NTgxNDA3NjA5MDI2NzcyOTkz.XOfp-A.24YWLZY8AMWaQI-tDDqQcmodc8s";
+
+  listInterface.forEach(function(item, index, array) {
+    //il y aura autant d'embranchements que d'interfaces disponibles
+    if(item = "Discord"){
+      listInterfacesToPush.push(new IntDiscord(tok, cerv));
+    }
+    if(item = "OwnUX"){
+      console.log('Je vais vers notre OWN UX')
+      listInterfacesToPush.push('OwnUX');
+    }
+  });
+  
+  infoChatbot.interfaces = listInterfacesToPush;
+  var chatbot = chatbots.addChatBot(infoChatbot);
+}

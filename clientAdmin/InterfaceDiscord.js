@@ -6,7 +6,7 @@ var InterfaceRiveScript = require(////\\\\\\\)
 class InterfaceDiscord {
 
 
-	constructor(token,chatBot){
+	constructor(token,cerveau){
 		this.discordBot = new Discord.Client({
  							token: token,
  							autorun: false
@@ -18,7 +18,7 @@ class InterfaceDiscord {
     									console.log('Logged in as: '+this.discordBot.username + ' - (' + this.discordBot.id + ')');
     								});
 
-		this.brainInterface = new InterfaceRiveScript(chatBot.brain);
+		this.brainInterface = new InterfaceRiveScript(cerveau);
 
 
 
