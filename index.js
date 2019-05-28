@@ -65,6 +65,7 @@ app.post('/chatbot', cors(corsOptions), function(req, res) {
 
     if(req.is('json')) //on devrait toujours tester le type et aussi la taille!
     {
+      
 		    var chatbot = chatbots.addChatBot(req.body);
         res.setHeader('Content-Type', 'application/json');
         res.json(chatbot);
