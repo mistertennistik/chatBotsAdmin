@@ -151,7 +151,7 @@ async function initChatbotAndInterfaces(infoChatbot){
     await listInterface.forEach(async function(item, index, array) {
     //il y aura autant d'embranchements que d'interfaces disponibles
     if(item == "Discord"){
-      await constructeur(cerv, tok);
+      await constructeur(cerv, tok,infoChatbot.nom);
     }
     if(item == "OwnUX"){
       console.log('Je vais vers notre OWN UX')
@@ -177,7 +177,7 @@ console.log(infoChatbot.interfaces);
 
 
 
-async function constructeur(cerveau,token){
+async function constructeur(cerveau,token,username){
 discordInterface.brainInterface =  new InterfaceRiveScript(cerveau);
 
     discordInterface.discordBot = await new Discord.Client({
@@ -185,10 +185,18 @@ discordInterface.brainInterface =  new InterfaceRiveScript(cerveau);
               autorun: true
             });
 
+
     await discordInterface.discordBot.on('ready', function (evt) {
                       console.log('Connected');
                       console.log('Logged in as: '+discordInterface.discordBot.username + ' - (' + discordInterface.discordBot.id + ')');
+                      discordInterface.discordBot.editUserInfo({
+                        username: username,
+                      });
                     });
+
+        
+
+
 
     await discordInterface.discordBot.on('message', function (user, userID, channelID, message, evt) {
       discordInterface.brainInterface.answer(user,message).then((mes)=>{
@@ -214,48 +222,3 @@ function parler(mes,channelID){
 
     
     
-
-    
-
-
-    
-
-/*  async lol(){
-    
-  
-
-    await console.log("________ ON EST DANS LE INIT _________")
-     await this.discordBot.on('ready', async function (evt) {
-                      await console.log('Connected');
-                      await console.log('Logged in as: '+this.discordBot.username + ' - (' + this.discordBot.id + ')');
-                    });
-     await console.log("________ ON A FINI LE INIT _________")
-  }
-
-  ecouter(){
-    this.discordBot.on('message', function (user, userID, channelID, message, evt) {
-      this.brainInterface.answer(user,message).then((mes)=>{
-        parler(mes,channelID);
-      }
-  
-        );
-    });
-  }
-
-  parler(mes,channelID){
-    this.discordBot.sendMessage({
-            to: channelID,
-            message: mes
-        }); 
-  }
-
-  ouvrir(){
-    this.discordBot.connect();
-
-    console.log(this.discordBot.username + ' - (' + this.discordBot.id + ')'+"bot is connected");
-  }
-
-  fermer(){
-    this.discordBot.disconnect();
-    console.log(this.discordBot.username + ' - (' + this.discordBot.id + ')'+"bot has been disconnected");
-  }*/
