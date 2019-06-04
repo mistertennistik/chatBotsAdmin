@@ -1,4 +1,4 @@
-var Discord = require('discord.io');
+const Discord = require('discord.io');
 //var talkback = new RiveScript();
 var InterfaceRiveScript = require('./InterfaceRiveScript.js');
 
@@ -6,30 +6,36 @@ var InterfaceRiveScript = require('./InterfaceRiveScript.js');
 class InterfaceDiscord {
 
 
-	constructor(token,cerveau){
-		this.discordBot = new Discord.Client({
- 							token: "NTgxNDA3NjA5MDI2NzcyOTkz.XPZwdQ.nmgaItBgewkuli0rpXgmr3biFRA",
- 							autorun: true
-						});
-		//ouvrir();
+		constructor(token,cerveau){
+		
+		
 
-		console.log("\n");
-		console.log("discordBot : :::   ");
-		console.log(this.discordBot);
-		console.log("\n");
-
-		this.discordBot.on('ready', function (evt) {
-    									console.log('Connected');
-    									console.log('Logged in as: '+this.discordBot.username + ' - (' + this.discordBot.id + ')');
-    								});
+		
 
 		this.brainInterface = new InterfaceRiveScript(cerveau);
 
-		//this.ouvrir();
+		this.lol();
+		this.ecouter();
 
 
 
 	}
+
+	async lol(){
+		
+		this.discordBot = new Discord.Client({
+ 							token: "NTgxNDA3NjA5MDI2NzcyOTkz.XPZwdQ.nmgaItBgewkuli0rpXgmr3biFRA",
+ 							autorun: true
+						});
+
+		await console.log("________ ON EST DANS LE INIT _________")
+		 await this.discordBot.on('ready', async function (evt) {
+    									await console.log('Connected');
+    									await console.log('Logged in as: '+this.discordBot.username + ' - (' + this.discordBot.id + ')');
+    								});
+		 await console.log("________ ON A FINI LE INIT _________")
+	}
+
 	ecouter(){
 		this.discordBot.on('message', function (user, userID, channelID, message, evt) {
 			this.brainInterface.answer(user,message).then((mes)=>{

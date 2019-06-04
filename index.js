@@ -1,16 +1,20 @@
 // Accès aux données ////////////////////////////////////
 
-const Chatbots = require('./Chatbots.js');
+const Chatbots = require('./ChatBots.js');
+const Chatbot = require('./ChatBot.js')
+
+const Discord = require('discord.io');
 
 
-const Discord = require('discord.js');
-const client = new Discord.Client();
+var InterfaceRiveScript = require('./clientAdmin/InterfaceRiveScript.js');
 
-var IntDiscord = require('./clientAdmin/InterfaceDiscord.js');
-var IntRive = require('./clientAdmin/InterfaceRiveScript.js');
+//var IntDiscord = require('./clientAdmin/InterfaceDiscord.js');
+//var IntRive = require('./clientAdmin/InterfaceRiveScript.js');
 
 var chatbots = new Chatbots();
-var chatbot;
+var chatbot=new Chatbot({});
+
+let discordInterface = {};
 /*
 console.log("<<<<< chatbots issus de la BDD >>>>>>");
 console.log(chatbots);
@@ -69,11 +73,11 @@ app.post('/chatbot', cors(corsOptions), function(req, res) {
     {
       
 		    //var chatbot = chatbots.addChatBot(req.body);
-        initChatbotAndInterfaces(req.body);
+         initChatbotAndInterfaces(req.body);
         res.setHeader('Content-Type', 'application/json');
         res.json(chatbot);
 
-        chatbot.interfaces[0].ecouter();
+        //chatbot.interfaces[0].ecouter();
 
         console.log("Done adding "+JSON.stringify(chatbot) );
 	  }else{
@@ -133,7 +137,7 @@ app.listen(8080, (err,data) => {
 var IntDiscord = require('./clientAdmin/InterfaceDiscord.js');
 var IntRive = require('./clientAdmin/InterfaceRiveScript.js');
 */
-function initChatbotAndInterfaces(infoChatbot){
+async function initChatbotAndInterfaces(infoChatbot){
   let listInterface = infoChatbot.interfaces;
   let listInterfacesToPush = [];
   //mettre dans l'objet chatbot le bon chemin vers son cerveau correspondant à sa personnalité 
@@ -143,13 +147,11 @@ function initChatbotAndInterfaces(infoChatbot){
   //token que l'on va récupérer avec notre fonction ProchainTokenLibre()
   let tok = "NTgxNDA3NjA5MDI2NzcyOTkz.XPZwdQ.nmgaItBgewkuli0rpXgmr3biFRA";
 
-  console.log("DANS initChatbotAndInterfaces");
-  console.log(infoChatbot);
 
-  listInterface.forEach(function(item, index, array) {
+    await listInterface.forEach(async function(item, index, array) {
     //il y aura autant d'embranchements que d'interfaces disponibles
     if(item == "Discord"){
-      listInterfacesToPush.push(new IntDiscord(tok, cerv));
+      await constructeur(cerv, tok);
     }
     if(item == "OwnUX"){
       console.log('Je vais vers notre OWN UX')
@@ -157,15 +159,103 @@ function initChatbotAndInterfaces(infoChatbot){
     }
   });
   
-  infoChatbot.interfaces = listInterfacesToPush;
-  console.log("Voici les infos du chatBot : ");
-  console.log(infoChatbot);
-  chatbots.addChatBot(infoChatbot).then(()=>{
-    chatbot.interfaces[0].ouvrir();
-  chatbot.interfaces[0].ecouter();
+infoChatbot.interfaces = discordInterface;
+console.log(infoChatbot.interfaces);
+
+ chatbot = chatbots.addChatBot(infoChatbot);
+
+   //chatbot.interfaces
   console.log(chatbot);
-});
+
   
-  console.log(chatbot.interfaces[0]);
+  //console.log(chatbot.interfaces[0]);
   //chatbot.interfaces[0].ecouter();
 }
+
+
+
+
+
+
+async function constructeur(cerveau,token){
+discordInterface.brainInterface =  new InterfaceRiveScript(cerveau);
+
+    discordInterface.discordBot = await new Discord.Client({
+              token: token,
+              autorun: true
+            });
+
+    await discordInterface.discordBot.on('ready', function (evt) {
+                      console.log('Connected');
+                      console.log('Logged in as: '+discordInterface.discordBot.username + ' - (' + discordInterface.discordBot.id + ')');
+                    });
+
+    await discordInterface.discordBot.on('message', function (user, userID, channelID, message, evt) {
+      discordInterface.brainInterface.answer(user,message).then((mes)=>{
+
+        if(userID != discordInterface.discordBot.id){
+        parler(mes,channelID);}
+      }
+  
+        );
+    });
+    
+
+}
+
+
+function parler(mes,channelID){
+  discordInterface.discordBot.sendMessage({
+            to: channelID,
+            message: mes
+        }); 
+}
+
+
+    
+    
+
+    
+
+
+    
+
+/*  async lol(){
+    
+  
+
+    await console.log("________ ON EST DANS LE INIT _________")
+     await this.discordBot.on('ready', async function (evt) {
+                      await console.log('Connected');
+                      await console.log('Logged in as: '+this.discordBot.username + ' - (' + this.discordBot.id + ')');
+                    });
+     await console.log("________ ON A FINI LE INIT _________")
+  }
+
+  ecouter(){
+    this.discordBot.on('message', function (user, userID, channelID, message, evt) {
+      this.brainInterface.answer(user,message).then((mes)=>{
+        parler(mes,channelID);
+      }
+  
+        );
+    });
+  }
+
+  parler(mes,channelID){
+    this.discordBot.sendMessage({
+            to: channelID,
+            message: mes
+        }); 
+  }
+
+  ouvrir(){
+    this.discordBot.connect();
+
+    console.log(this.discordBot.username + ' - (' + this.discordBot.id + ')'+"bot is connected");
+  }
+
+  fermer(){
+    this.discordBot.disconnect();
+    console.log(this.discordBot.username + ' - (' + this.discordBot.id + ')'+"bot has been disconnected");
+  }*/
