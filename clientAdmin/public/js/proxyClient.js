@@ -190,7 +190,7 @@ function initialiseBot(postOrPut,id=9999999999999){
   botToPost.interfaces = [];
   if (interface1.checked) {
       botToPost.interfaces.push("OwnUX")
-      //console.log("La case OwnUX est cochée");
+      console.log("La case OwnUX est cochée");
     }
 
     if(interface2.checked){

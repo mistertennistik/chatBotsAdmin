@@ -2,7 +2,7 @@ var RiveScript = require('rivescript');
 var rs = new RiveScript();
 
 
-class InterfaceRiveScript(){
+class InterfaceRiveScript{
 	
 
 	constructor(brain){

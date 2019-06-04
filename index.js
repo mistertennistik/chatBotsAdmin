@@ -10,6 +10,7 @@ var IntDiscord = require('./clientAdmin/InterfaceDiscord.js');
 var IntRive = require('./clientAdmin/InterfaceRiveScript.js');
 
 var chatbots = new Chatbots();
+var chatbot;
 /*
 console.log("<<<<< chatbots issus de la BDD >>>>>>");
 console.log(chatbots);
@@ -68,8 +69,12 @@ app.post('/chatbot', cors(corsOptions), function(req, res) {
     {
       
 		    //var chatbot = chatbots.addChatBot(req.body);
+        initChatbotAndInterfaces(req.body);
         res.setHeader('Content-Type', 'application/json');
         res.json(chatbot);
+
+        chatbot.interfaces[0].ecouter();
+
         console.log("Done adding "+JSON.stringify(chatbot) );
 	  }else{
       res.send(400, 'Bad Request !');
@@ -133,20 +138,34 @@ function initChatbotAndInterfaces(infoChatbot){
   let listInterfacesToPush = [];
   //mettre dans l'objet chatbot le bon chemin vers son cerveau correspondant à sa personnalité 
   let cerv = "./bot/brain1.rive";
+
+  infoChatbot.cerveau = cerv;
   //token que l'on va récupérer avec notre fonction ProchainTokenLibre()
-  let tok = "NTgxNDA3NjA5MDI2NzcyOTkz.XOfp-A.24YWLZY8AMWaQI-tDDqQcmodc8s";
+  let tok = "NTgxNDA3NjA5MDI2NzcyOTkz.XPZwdQ.nmgaItBgewkuli0rpXgmr3biFRA";
+
+  console.log("DANS initChatbotAndInterfaces");
+  console.log(infoChatbot);
 
   listInterface.forEach(function(item, index, array) {
     //il y aura autant d'embranchements que d'interfaces disponibles
-    if(item = "Discord"){
+    if(item == "Discord"){
       listInterfacesToPush.push(new IntDiscord(tok, cerv));
     }
-    if(item = "OwnUX"){
+    if(item == "OwnUX"){
       console.log('Je vais vers notre OWN UX')
       listInterfacesToPush.push('OwnUX');
     }
   });
   
   infoChatbot.interfaces = listInterfacesToPush;
-  var chatbot = chatbots.addChatBot(infoChatbot);
+  console.log("Voici les infos du chatBot : ");
+  console.log(infoChatbot);
+  chatbots.addChatBot(infoChatbot).then(()=>{
+    chatbot.interfaces[0].ouvrir();
+  chatbot.interfaces[0].ecouter();
+  console.log(chatbot);
+});
+  
+  console.log(chatbot.interfaces[0]);
+  //chatbot.interfaces[0].ecouter();
 }
