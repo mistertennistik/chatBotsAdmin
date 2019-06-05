@@ -8,38 +8,42 @@ class InterfaceDiscord {
 
 		constructor(token,cerveau){
 		
+		this.token = token;
 		
+		this.discordBot= new Discord.Client({
+              token: this.token,
+              autorun: true
+            });
+
+		console.log("c'est la brainInterface :::: ")
+		console.log(this.brainInterface);
 
 		
-
 		this.brainInterface = new InterfaceRiveScript(cerveau);
 
-		this.lol();
-		this.ecouter();
+		//this.ecouter();
 
 
 
 	}
 
-	async lol(){
-		
-		this.discordBot = new Discord.Client({
- 							token: "NTgxNDA3NjA5MDI2NzcyOTkz.XPZwdQ.nmgaItBgewkuli0rpXgmr3biFRA",
- 							autorun: true
-						});
+	async init(){
 
-		await console.log("________ ON EST DANS LE INIT _________")
-		 await this.discordBot.on('ready', async function (evt) {
-    									await console.log('Connected');
-    									await console.log('Logged in as: '+this.discordBot.username + ' - (' + this.discordBot.id + ')');
+		
+		 this.discordBot.on('ready',   (evt)=> {
+    									console.log('Connected');
+    								  console.log('Logged in as: '+this.discordBot.username + ' - (' + this.discordBot.id + ')');
     								});
-		 await console.log("________ ON A FINI LE INIT _________")
+		 this.ecouter();
+		
 	}
 
 	ecouter(){
-		this.discordBot.on('message', function (user, userID, channelID, message, evt) {
+		this.discordBot.on('message', (user, userID, channelID, message, evt) =>{
+			console.log("VOIci le message :::");
+			console.log(message);
 			this.brainInterface.answer(user,message).then((mes)=>{
-				parler(mes,channelID);
+				this.parler(mes,channelID);
 			}
 	
 				);

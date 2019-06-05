@@ -3,12 +3,12 @@
 const Chatbots = require('./ChatBots.js');
 const Chatbot = require('./ChatBot.js')
 
-const Discord = require('discord.io');
+//const Discord = require('discord.io');
 
 
-var InterfaceRiveScript = require('./clientAdmin/InterfaceRiveScript.js');
+const InterfaceRiveScript = require('./clientAdmin/InterfaceRiveScript.js');
 
-//var IntDiscord = require('./clientAdmin/InterfaceDiscord.js');
+const IntDiscord = require('./clientAdmin/InterfaceDiscord.js');
 //var IntRive = require('./clientAdmin/InterfaceRiveScript.js');
 
 var chatbots = new Chatbots();
@@ -73,7 +73,7 @@ app.post('/chatbot', cors(corsOptions), function(req, res) {
     {
       
 		    //var chatbot = chatbots.addChatBot(req.body);
-         initChatbotAndInterfaces(req.body);
+         initChatBotAndInterfaces(req.body);
         res.setHeader('Content-Type', 'application/json');
         res.json(chatbot);
 
@@ -133,11 +133,44 @@ app.listen(8080, (err,data) => {
 
 
 
+
+async function initChatBotAndInterfaces(chatBotDatas){
+  let listInterface = chatBotDatas.interfaces;
+  let listInterfacesToPush=[];
+  //mettre dans l'objet chatbot le bon chemin vers son cerveau correspondant à sa personnalité 
+  let cerv = "./bot/brain1.rive";
+
+  chatBotDatas.cerveau = cerv;
+  //token que l'on va récupérer avec notre fonction ProchainTokenLibre()
+  let tok = "NTgxNDA3NjA5MDI2NzcyOTkz.XPZwdQ.nmgaItBgewkuli0rpXgmr3biFRA";
+
+
+   await listInterface.forEach( async function(item, index, array) {
+    //il y aura autant d'embranchements que d'interfaces disponibles
+    if(item == "Discord"){
+      let discInt = await new IntDiscord(tok, cerv)
+      await listInterfacesToPush.push(discInt);
+    }
+    if(item == "OwnUX"){
+      console.log('Je vais vers notre OWN UX')
+      listInterfacesToPush.push('OwnUX');
+    }
+  });
+
+  chatBotDatas.interfaces = listInterfacesToPush;
+   chatbot =  await chatbots.addChatBot(chatBotDatas);
+   await chatbot.interfaces[0].init();
+   console.log(chatbot);
+
+}
+
+
+
 /*
 var IntDiscord = require('./clientAdmin/InterfaceDiscord.js');
 var IntRive = require('./clientAdmin/InterfaceRiveScript.js');
 */
-async function initChatbotAndInterfaces(infoChatbot){
+/*async function initChatbotAndInterfaces(infoChatbot){
   let listInterface = infoChatbot.interfaces;
   let listInterfacesToPush = [];
   //mettre dans l'objet chatbot le bon chemin vers son cerveau correspondant à sa personnalité 
@@ -218,7 +251,7 @@ function parler(mes,channelID){
             message: mes
         }); 
 }
-
+*/
 
     
     
