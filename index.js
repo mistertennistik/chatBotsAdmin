@@ -7,29 +7,20 @@ const Chatbot = require('./ChatBot.js')
 
 
 const InterfaceRiveScript = require('./clientAdmin/InterfaceRiveScript.js');
-
 const IntDiscord = require('./clientAdmin/InterfaceDiscord.js');
-//var IntRive = require('./clientAdmin/InterfaceRiveScript.js');
+
 
 var chatbots = new Chatbots();
 var chatbot=new Chatbot({});
 
-let discordInterface = {};
-/*
-console.log("<<<<< chatbots issus de la BDD >>>>>>");
-console.log(chatbots);
-console.log("<<<<<<<<<<<-------------->>>>>>>>>>>>")
-console.log(chatbots.getChatBot(1));*/
+var availabletoken = [];
+var usedToken = [];
 
-////////////////////////////////////////////////////////
 
 
 var express = require('express');
 var bodyParser = require('body-parser');
 var cors = require('cors');
-//var dao = require('dummyTagsDAO'); // in the node_modules directory
-
-
 
 
 
@@ -145,7 +136,7 @@ async function initChatBotAndInterfaces(chatBotDatas){
   let tok = "NTgxNDA3NjA5MDI2NzcyOTkz.XPZwdQ.nmgaItBgewkuli0rpXgmr3biFRA";
 
 
-   await listInterface.forEach( async function(item, index, array) {
+  await listInterface.forEach( async function(item, index, array) {
     //il y aura autant d'embranchements que d'interfaces disponibles
     if(item == "Discord"){
       let discInt = await new IntDiscord(tok, cerv)
@@ -158,100 +149,14 @@ async function initChatBotAndInterfaces(chatBotDatas){
   });
 
   chatBotDatas.interfaces = listInterfacesToPush;
-   chatbot =  await chatbots.addChatBot(chatBotDatas);
-   await chatbot.interfaces[0].init();
-   console.log(chatbot);
-
-}
-
-
-
-/*
-var IntDiscord = require('./clientAdmin/InterfaceDiscord.js');
-var IntRive = require('./clientAdmin/InterfaceRiveScript.js');
-*/
-/*async function initChatbotAndInterfaces(infoChatbot){
-  let listInterface = infoChatbot.interfaces;
-  let listInterfacesToPush = [];
-  //mettre dans l'objet chatbot le bon chemin vers son cerveau correspondant à sa personnalité 
-  let cerv = "./bot/brain1.rive";
-
-  infoChatbot.cerveau = cerv;
-  //token que l'on va récupérer avec notre fonction ProchainTokenLibre()
-  let tok = "NTgxNDA3NjA5MDI2NzcyOTkz.XPZwdQ.nmgaItBgewkuli0rpXgmr3biFRA";
-
-
-    await listInterface.forEach(async function(item, index, array) {
-    //il y aura autant d'embranchements que d'interfaces disponibles
-    if(item == "Discord"){
-      await constructeur(cerv, tok,infoChatbot.nom);
-    }
-    if(item == "OwnUX"){
-      console.log('Je vais vers notre OWN UX')
-      listInterfacesToPush.push('OwnUX');
-    }
-  });
-  
-infoChatbot.interfaces = discordInterface;
-console.log(infoChatbot.interfaces);
-
- chatbot = chatbots.addChatBot(infoChatbot);
-
-   //chatbot.interfaces
+  chatbot = chatbots.addChatBot(chatBotDatas);
+  chatbot.interfaces[0].init();
   console.log(chatbot);
 
-  
-  //console.log(chatbot.interfaces[0]);
-  //chatbot.interfaces[0].ecouter();
 }
 
 
 
-
-
-
-async function constructeur(cerveau,token,username){
-discordInterface.brainInterface =  new InterfaceRiveScript(cerveau);
-
-    discordInterface.discordBot = await new Discord.Client({
-              token: token,
-              autorun: true
-            });
-
-
-    await discordInterface.discordBot.on('ready', function (evt) {
-                      console.log('Connected');
-                      console.log('Logged in as: '+discordInterface.discordBot.username + ' - (' + discordInterface.discordBot.id + ')');
-                      discordInterface.discordBot.editUserInfo({
-                        username: username,
-                      });
-                    });
-
-        
-
-
-
-    await discordInterface.discordBot.on('message', function (user, userID, channelID, message, evt) {
-      discordInterface.brainInterface.answer(user,message).then((mes)=>{
-
-        if(userID != discordInterface.discordBot.id){
-        parler(mes,channelID);}
-      }
-  
-        );
-    });
-    
-
-}
-
-
-function parler(mes,channelID){
-  discordInterface.discordBot.sendMessage({
-            to: channelID,
-            message: mes
-        }); 
-}
-*/
 
     
     

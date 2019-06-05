@@ -1,40 +1,38 @@
+/////// NOTE : arrow notation are very important to use "this" in a callback. 
+//Otherwise it will refers to the function itself
+
+
 const Discord = require('discord.io');
-//var talkback = new RiveScript();
-var InterfaceRiveScript = require('./InterfaceRiveScript.js');
+const InterfaceRiveScript = require('./InterfaceRiveScript.js');
 
 
 class InterfaceDiscord {
 
 
-		constructor(token,cerveau){
+	constructor(token,cerveau,name){
 		
 		this.token = token;
-		
+		this.name = name;
 		this.discordBot= new Discord.Client({
-              token: this.token,
-              autorun: true
-            });
+			token: this.token,
+			autorun: true
+		});
 
-		console.log("c'est la brainInterface :::: ")
-		console.log(this.brainInterface);
-
-		
 		this.brainInterface = new InterfaceRiveScript(cerveau);
-
-		//this.ecouter();
-
-
 
 	}
 
-	async init(){
+	init(){
 
 		
-		 this.discordBot.on('ready',   (evt)=> {
-    									console.log('Connected');
-    								  console.log('Logged in as: '+this.discordBot.username + ' - (' + this.discordBot.id + ')');
-    								});
-		 this.ecouter();
+		this.discordBot.on('ready',   (evt)=> {
+			console.log('Connected');
+			console.log('Logged in as: '+this.discordBot.username + ' - (' + this.discordBot.id + ')');
+    		/*this.discordBot.editUserInfo({
+                username: this.name,
+            });*/
+        });
+		this.ecouter();
 		
 	}
 
@@ -43,18 +41,20 @@ class InterfaceDiscord {
 			console.log("VOIci le message :::");
 			console.log(message);
 			this.brainInterface.answer(user,message).then((mes)=>{
-				this.parler(mes,channelID);
+				if(userID != this.discordBot.id){
+					this.parler(mes,channelID);
+				}
 			}
-	
-				);
+
+			);
 		});
 	}
 
 	parler(mes,channelID){
 		this.discordBot.sendMessage({
-            to: channelID,
-            message: mes
-        }); 
+			to: channelID,
+			message: mes
+		}); 
 	}
 
 	ouvrir(){
