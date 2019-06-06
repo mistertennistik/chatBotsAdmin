@@ -67,6 +67,12 @@ class InterfaceDiscord {
 		this.discordBot.disconnect();
 		console.log(this.discordBot.username + ' - (' + this.discordBot.id + ')'+"bot has been disconnected");
 	}
+
+	changerNom(nom){
+		this.discordBot.editUserInfo({
+                username: nom,
+            });
+	}
 	
 }
 
