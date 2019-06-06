@@ -82,7 +82,10 @@ app.put('/chatbot/:id', cors(corsOptions), function(req, res) {
     res.setHeader('Content-Type', 'application/json');
     if(req.is('json')) //on devrait toujours tester le type et aussi la taille!
     {
+
+        console.log('-------- On est dans le put ::: ------')
         console.log(req.body);
+        updateChatbot(req.body);
 		    var chatbot = chatbots.updateChatBot(req.body);
         if(undefined==chatbot){
           res.send(404, 'Page introuvable !');
@@ -172,7 +175,7 @@ async function initChatBotAndInterfaces(chatBotDatas){
   await listInterface.forEach( async function(item, index, array) {
     //il y aura autant d'embranchements que d'interfaces disponibles
     if(item == "Discord"){
-      let discInt = await new IntDiscord(tok, cerv)
+      let discInt = await new IntDiscord(tok, cerv) // ne pas oublier nom
       await listInterfacesToPush.push(discInt);
     }
     if(item == "OwnUX"){
@@ -189,7 +192,85 @@ async function initChatBotAndInterfaces(chatBotDatas){
 }
 
 
+async function updateChatbot(chatBotDatas){
+
+  // est ce que la version précédente du bot avait (Discord, OwnUX..  ?)
+  let hasPreviousDiscord = false;
+  let hasPreviousOwnUX = false;
+
+  // est ce que la nouvelle version du bot souhaite (Discord, OwnUX..  ?)
+  let wantDiscord = false;
+  let wantOwnUX = false;
 
 
+  //est ce que le nom du bot a changé ? 
+  let hasNameChanged = false;
+  // on vérifie quelles intefaces possède déjà le bot
+  cB.interfaces.forEach(function (item2, index,array){
+      if(item2 instanceof IntDiscord){
+        hasDiscord=true;
+      }else if(item2 == 'OwnUX'){
+        hasOwnUX = true;
+      }
+    });
+
+  //on récupère le chatbot du mock
+  let cB = chatbots.getChatBot(chatBotDatas.id);
+
+  // on change éventuellement son cerveau
+  cB = getBrainPath(chatBotDatas.cerveau);
+
+  // on change éventuellement son cerveau
+
+  if(cB.nom != chatBotDatas.nom){
+    hasNameChanged = true;
+    cB.nom = chatBotDatas.nom
+  }
+  
+
+  //on remet à jour les interfaces
+  await listInterface.forEach( async function(item, index, array) {
+
+    
+
+    //il y aura autant d'embranchements que d'interfaces disponibles
+    if(item == "Discord"){
+      wantDiscord = true;
+      if(!hasDiscord){
+        let discInt = await new IntDiscord(tok, cerv) // ne pas oublier nom
+        await cB.push(discInt);
+      }
+      if(hasNameChanged){
+        cB.interfaces.forEach((item, index, array)=>{
+            if(item instanceof IntDiscord){
+              item.changerNom(cB.nom);
+            }
+        })
+      }
+    }
+
+    if(item == "OwnUX"){
+      wantOwnUX = true;
+      if(!hasOwnUX){
+        console.log('Je vais vers notre OWN UX')
+        listInterfacesToPush.push('OwnUX');
+      }
+      
+    }
+
+  });
+
+  if(hasPreviousDiscord and !wantDiscord){
+    //on libere le token
+    //on supprime l'interface Discord
+  }
+  if(hasPreviousOwnUX and !wantOwnUX){
+    //on supprime l'interface OwnUX
+  }
+
+
+  //on update finalement le chatBot dans chatBots
+
+}
     
     
