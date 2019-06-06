@@ -1,13 +1,14 @@
 // Accès aux données ////////////////////////////////////
 
 const Chatbots = require('./ChatBots.js');
-const Chatbot = require('./ChatBot.js')
+const Chatbot = require('./ChatBot.js');
+const tokens = require('./auth.json');
 
 //const Discord = require('discord.io');
 
 
-const InterfaceRiveScript = require('./clientAdmin/InterfaceRiveScript.js');
-const IntDiscord = require('./clientAdmin/InterfaceDiscord.js');
+const InterfaceRiveScript = require('./InterfaceRiveScript.js');
+const IntDiscord = require('./InterfaceDiscord.js');
 
 
 var chatbots = new Chatbots();
@@ -15,7 +16,7 @@ var chatbot=new Chatbot({});
 
 var availabletoken = [];
 var usedToken = [];
-
+initializeTokens(); //initialisation de la liste 'availabletoken'
 
 
 var express = require('express');
@@ -25,6 +26,7 @@ var cors = require('cors');
 
 
 var app = express();
+
 
 //https://expressjs.com/en/resources/middleware/cors.html
 app.use(cors());
@@ -95,7 +97,7 @@ app.put('/chatbot/:id', cors(corsOptions), function(req, res) {
 });
 
 app.delete('/chatbot/:id', cors(corsOptions),function(req, res) {
-    let id = chatbots.deleteChatBot(parseInt(req.params.id));
+  let id = chatbots.deleteChatBot(parseInt(req.params.id));
 	console.log("delete "+id+" "+req.params.id+" hop");
     if(undefined!=id){
         res.setHeader('Content-Type', 'application/json');
@@ -122,18 +124,49 @@ app.listen(8080, (err,data) => {
     
   });
 
+function initializeTokens(){
+  availabletoken = tokens;
+}
+
+function nextAvailableToken(){
+  if (availabletoken.length > 0){
+    let tokenTmp = availabletoken.shift(); // supprime le premier élément de la liste et le retourne
+    usedToken.push(tokenTmp);
+
+    return tokenTmp;
+  }
+  else{
+    console.log('Plus de tokens valides');
+  }
+}
+
+function getBrainPath(brainFromBody){
+  if (brainFromBody == 'b1'){
+    return "./brains/brain1.rive"
+  }
+  else if (brainFromBody == 'b2'){
+    return "./brains/brain2.rive"  
+  }
+  else if (brainFromBody == 'b3'){
+    return "./brains/brain3.rive"
+  }
+  else if (brainFromBody == 'b4'){
+    return "./brains/brain4.rive"
+  }
+}
+
 
 
 
 async function initChatBotAndInterfaces(chatBotDatas){
   let listInterface = chatBotDatas.interfaces;
   let listInterfacesToPush=[];
-  //mettre dans l'objet chatbot le bon chemin vers son cerveau correspondant à sa personnalité 
-  let cerv = "./bot/brain1.rive";
+
+  let cerv = getBrainPath(chatBotDatas.cerveau);
 
   chatBotDatas.cerveau = cerv;
-  //token que l'on va récupérer avec notre fonction ProchainTokenLibre()
-  let tok = "NTgxNDA3NjA5MDI2NzcyOTkz.XPZwdQ.nmgaItBgewkuli0rpXgmr3biFRA";
+  let tok = nextAvailableToken();
+
 
 
   await listInterface.forEach( async function(item, index, array) {
