@@ -17,7 +17,7 @@ var chatbot=new Chatbot({});
 var availabletoken = [];
 var usedToken = [];
 initializeTokens(); //initialisation de la liste 'availabletoken'
-
+//updateTokens(chatbots.getChatBot(1));
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -100,6 +100,8 @@ app.put('/chatbot/:id', cors(corsOptions), function(req, res) {
 });
 
 app.delete('/chatbot/:id', cors(corsOptions),function(req, res) {
+  console.log("!*!*!*!*!*! updating token : ")
+  updateTokens(chatbots.getChatBot(parseInt(req.params.id)));
   let id = chatbots.deleteChatBot(parseInt(req.params.id));
 	console.log("delete "+id+" "+req.params.id+" hop");
     if(undefined!=id){
@@ -158,6 +160,44 @@ function getBrainPath(brainFromBody){
   }
 }
 
+function updateTokens(chatbot){
+  console.log("\nEtat actuel des listes");
+  console.log(usedToken);
+  console.log(availabletoken);
+  let tokenTmp;
+  chatbot.interfaces.forEach(function(element){
+    if (element instanceof IntDiscord){
+      tokenTmp = element.token;
+      console.log("=======>>> This is the token"+tokenTmp);  
+      fromUsedToAvailable(tokenTmp);    
+    }
+  });
+  console.log("\nEtat des listes en fin de procédure");
+  console.log(usedToken);
+  console.log(availabletoken);
+
+}
+
+function fromUsedToAvailable(usedTok){
+  if (usedToken.length == 1){
+    usedToken = []
+  }
+  else{
+    for (var i=usedToken.length-1; i>=0; i--) {
+      if (usedToken[i] === usedTok) {
+        usedToken.splice(i, 1);
+      }
+    }
+  }
+  availabletoken.push(usedTok);
+}
+
+
+function arrayRemove(arr, value) {
+   return arr.filter(function(ele){
+       return ele != value;
+   });
+}
 
 
 
