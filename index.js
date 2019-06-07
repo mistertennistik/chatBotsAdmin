@@ -113,6 +113,50 @@ app.delete('/chatbot/:id', cors(corsOptions),function(req, res) {
 
 
 
+app.put('/connect/:id', cors(corsOptions), function(req,res){
+
+  res.setHeader('Content-Type', 'application/json');
+    if(req.is('json')) //on devrait toujours tester le type et aussi la taille!
+    {
+        let cB = chatbots.getChatBot(req.body.id);
+        connect(cB);
+        if(undefined==chatbot){
+          res.send(404, 'Page introuvable !');
+        }else{
+          res.json(chatbot);
+          console.log("Done updating "+JSON.stringify(chatbot) );
+  }
+    }else{
+      res.send(400, 'Bad Request !');
+    }
+
+
+}
+
+);
+
+app.put('/disconnect/:id', cors(corsOptions), function(req,res){
+
+  res.setHeader('Content-Type', 'application/json');
+    if(req.is('json')) //on devrait toujours tester le type et aussi la taille!
+    {
+
+        let cB = chatbots.getChatBot(req.body.id);
+        disconnect(cB);
+        if(undefined==chatbot){
+          res.send(404, 'Page introuvable !');
+        }else{
+          res.json(chatbot);
+          console.log("Done updating "+JSON.stringify(chatbot) );
+  }
+    }else{
+      res.send(400, 'Bad Request !');
+    }
+
+
+}
+
+);
 
 app.use(function(req, res, next){
     res.setHeader('Content-Type', 'text/plain');
@@ -335,6 +379,29 @@ async function updateChatbot(chatBotDatas){
   return chatbots.updateChatBot(cB);
   //on update finalement le chatBot dans chatBots
 
+}
+
+
+function connect(cB){
+  cB.interfaces.forEach((item, index, array)=>{
+      if(item instanceof IntDiscord){
+        item.ouvrir();
+      }
+      if(item=='OwnUX'){
+        console.log(" On ouvre la connection pour OwnUX");
+      }
+  });
+}
+
+function disconnect(){
+  cB.interfaces.forEach((item, index, array)=>{
+      if(item instanceof IntDiscord){
+        item.fermer();
+      }
+      if(item=='OwnUX'){
+        console.log(" On ferme la connection pour OwnUX");
+      }
+  });
 }
     
     
