@@ -85,8 +85,7 @@ app.put('/chatbot/:id', cors(corsOptions), function(req, res) {
 
         console.log('-------- On est dans le put ::: ------')
         console.log(req.body);
-        updateChatbot(req.body);
-		    var chatbot = chatbots.updateChatBot(req.body);
+        var chatbot = updateChatbot(req.body);
         if(undefined==chatbot){
           res.send(404, 'Page introuvable !');
         }else{
@@ -141,7 +140,7 @@ function nextAvailableToken(){
     return tokenTmp;
   }
   else{
-    console.log('Plus de tokens valides');
+    console.log('Plus de tokens valides'); 
   }
 }
 
@@ -208,14 +207,15 @@ async function initChatBotAndInterfaces(chatBotDatas){
   let cerv = getBrainPath(chatBotDatas.cerveau);
 
   chatBotDatas.cerveau = cerv;
-  let tok = nextAvailableToken();
 
 
 
   await listInterface.forEach( async function(item, index, array) {
     //il y aura autant d'embranchements que d'interfaces disponibles
     if(item == "Discord"){
+      let tok = nextAvailableToken();
       let discInt = await new IntDiscord(tok, cerv) // ne pas oublier nom
+      discInt.init();
       await listInterfacesToPush.push(discInt);
     }
     if(item == "OwnUX"){
@@ -226,7 +226,6 @@ async function initChatBotAndInterfaces(chatBotDatas){
 
   chatBotDatas.interfaces = listInterfacesToPush;
   chatbot = chatbots.addChatBot(chatBotDatas);
-  chatbot.interfaces[0].init();
   console.log(chatbot);
 
 }
@@ -242,23 +241,31 @@ async function updateChatbot(chatBotDatas){
   let wantDiscord = false;
   let wantOwnUX = false;
 
+  //on récupère le chatbot du mock
+  let cB = chatbots.getChatBot(chatBotDatas.id);
+  console.log("voici le id du chatbot récupéré : "+chatBotDatas.id);
+  console.log("\n");
+  console.log(cB);
+
+  //est-ce que le brain a changé ?
+  let hasBrainChanged = false;
 
   //est ce que le nom du bot a changé ? 
   let hasNameChanged = false;
   // on vérifie quelles intefaces possède déjà le bot
   cB.interfaces.forEach(function (item2, index,array){
       if(item2 instanceof IntDiscord){
-        hasDiscord=true;
+        hasPreviousDiscord=true;
       }else if(item2 == 'OwnUX'){
-        hasOwnUX = true;
+        hasPreviousOwnUX = true;
       }
     });
 
-  //on récupère le chatbot du mock
-  let cB = chatbots.getChatBot(chatBotDatas.id);
-
-  // on change éventuellement son cerveau
-  cB = getBrainPath(chatBotDatas.cerveau);
+  if (chatBotDatas.cerveau != cB.cerveau){
+    // on change éventuellement son cerveau
+    cB.cerveau = getBrainPath(chatBotDatas.cerveau);
+    hasBrainChanged = true;
+  }
 
   // on change éventuellement son cerveau
 
@@ -269,16 +276,25 @@ async function updateChatbot(chatBotDatas){
   
 
   //on remet à jour les interfaces
-  await listInterface.forEach( async function(item, index, array) {
-
-    
+  await chatBotDatas.interfaces.forEach( async function(item, index, array) {
 
     //il y aura autant d'embranchements que d'interfaces disponibles
     if(item == "Discord"){
       wantDiscord = true;
-      if(!hasDiscord){
-        let discInt = await new IntDiscord(tok, cerv) // ne pas oublier nom
-        await cB.push(discInt);
+      if(!hasPreviousDiscord){
+        let tokTmp = nextAvailableToken(); //on estime qu'il y a assez de token libre
+        let discInt = await new IntDiscord(tokTmp, cB.cerveau) // ne pas oublier nom
+        discInt.init();
+        await cB.interfaces.push(discInt);
+      }
+      else{
+        if(hasBrainChanged){
+          cB.interfaces.forEach((item, index, array)=>{
+            if(item instanceof IntDiscord){
+              item.changerBrain(cB.cerveau);
+            }
+          })
+        }
       }
       if(hasNameChanged){
         cB.interfaces.forEach((item, index, array)=>{
@@ -291,24 +307,32 @@ async function updateChatbot(chatBotDatas){
 
     if(item == "OwnUX"){
       wantOwnUX = true;
-      if(!hasOwnUX){
+      if(!hasPreviousOwnUX){
         console.log('Je vais vers notre OWN UX')
-        listInterfacesToPush.push('OwnUX');
+        await cB.interfaces.push('OwnUX');
       }
       
     }
 
   });
 
-  if(hasPreviousDiscord and !wantDiscord){
-    //on libere le token
+  if(hasPreviousDiscord && !wantDiscord){
+    let indToDelete;
+    updateTokens(cB);//on libere le token
+    cB.interfaces.forEach((item, index, array)=>{
+      if (item instanceof IntDiscord){
+        indToDelete = index;
+      }
+    })
+    cB.interfaces.splice(index,1);
     //on supprime l'interface Discord
   }
-  if(hasPreviousOwnUX and !wantOwnUX){
+  if(hasPreviousOwnUX && !wantOwnUX){
     //on supprime l'interface OwnUX
   }
 
 
+  return chatbots.updateChatBot(cB);
   //on update finalement le chatBot dans chatBots
 
 }

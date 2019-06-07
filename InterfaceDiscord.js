@@ -73,6 +73,10 @@ class InterfaceDiscord {
                 username: nom,
             });
 	}
+
+	changerBrain(newBrain){
+		this.brainInterface = new InterfaceRiveScript(newBrain);
+	}
 	
 }
 
