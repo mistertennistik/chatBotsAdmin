@@ -368,11 +368,18 @@ async function updateChatbot(chatBotDatas){
         indToDelete = index;
       }
     })
-    cB.interfaces.splice(index,1);
+    cB.interfaces.splice(indToDelete,1);
     //on supprime l'interface Discord
   }
   if(hasPreviousOwnUX && !wantOwnUX){
     //on supprime l'interface OwnUX
+    let ind;
+    cB.interfaces.forEach((item, index, array)=>{
+      if (item =='OwnUX'){
+        ind = index;
+      }
+    })
+    cB.interfaces.splice(ind,1);
   }
 
 
