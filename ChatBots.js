@@ -22,13 +22,13 @@ class ChatBots{
   getChatBot(id){
     this.chatbots.forEach(logMapElements);
     console.log(typeof id);
-    console.log("getting chatbots with id "+id+" : "+JSON.stringify(this.chatbots.get(id)));
+    console.log("getting chatbots with id "+id/*+" : "+JSON.stringify(this.chatbots.get(id))*/);
     return this.chatbots.get(id);
   }
   deleteChatBot(id){
     this.chatbots.forEach(logMapElements);
     let chatbot = this.chatbots.get(id);
-	console.log("chatbot :"+JSON.stringify(chatbot));
+	console.log("deleting chatbot with id "+id/*+JSON.stringify(chatbot)*/);
     if(undefined!=chatbot){
       this.chatbots.delete(id);
       return id;
@@ -37,6 +37,7 @@ class ChatBots{
     }
   }
   updateChatBot(updatedChatBot){
+    console.log("updating chatbot with id "+updatedChatBot.id);
     const hasChatBot = this.chatbots.has(updatedChatBot.id);
     if(hasChatBot){
       this.chatbots.set(updatedChatBot.id,updatedChatBot);
@@ -59,7 +60,8 @@ class ChatBots{
 }
 
 function logMapElements(value, key, map) {
-  console.log("m["+key+"] = "+JSON.stringify(value));
+  //console.log("m["+key+"] = "+JSON.stringify(value));
+  console.log("m["+key+"] = "+value.nom+"\t"+value.cerveau+"\t");
 }
 
 
