@@ -8,6 +8,8 @@ const getBotURL="http://localhost:8080/chatbot/";
 const postBotURL="http://localhost:8080/chatbot";
 const putBotURL="http://localhost:8080/chatbot/";
 const deleteBotURL="http://localhost:8080/chatbot/";
+const connectBotURL="http://localhost:8080/connect/";
+const disconnectBotURL="http://localhost:8080/disconnect/";
 
 
 
@@ -73,7 +75,7 @@ function postBot(){
     console.error("No Invocation TookPlace At All");
   }
 }
-function putBot(id){ // A faire
+function putBot(id){
   if(invocation){
     invocation.open('PUT', putBotURL+id, true);
     invocation.setRequestHeader('Content-Type', 'application/json');
@@ -148,6 +150,8 @@ document.getElementById('input_updateBot').addEventListener('click',updateBot);
 document.getElementById('input_getAllBots').addEventListener('click', getAllBots);
 document.getElementById('input_updateBot').addEventListener('click',updateBot);
 document.getElementById('input_deleteBot').addEventListener('click',beforeDeleteBot);
+document.getElementById('connect').addEventListener('click',connectBot);
+document.getElementById('disconnect').addEventListener('click',disconnectBot);
 
 
 
@@ -170,7 +174,29 @@ function beforeDeleteBot(){
   deleteBot(id);
 }
 
+function connectBot(){
+  let id = document.getElementById('input_botID').value;
+  if(invocation){
+    invocation.open('PUT', connectBotURL+id, true);
+    invocation.setRequestHeader('Content-Type', 'application/json');
+    invocation.onreadystatechange = handler;
+    //invocation.send(JSON.stringify(botToPost));
+  }else{
+    console.error("No Invocation TookPlace At All");
+  }
+}
 
+function disconnectBot(){
+  let id = document.getElementById('input_botID').value;
+  if(invocation){
+    invocation.open('PUT', disconnectBotURL+id, true);
+    invocation.setRequestHeader('Content-Type', 'application/json');
+    invocation.onreadystatechange = handler;
+    //invocation.send(JSON.stringify(botToPost));
+  }else{
+    console.error("No Invocation TookPlace At All");
+  }
+}
 
 function showAllBots(jsonBots){
   console.log("$$$$$$$$$")
