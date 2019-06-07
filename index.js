@@ -290,7 +290,6 @@ async function updateChatbot(chatBotDatas){
   //on récupère le chatbot du mock
   let cB = chatbots.getChatBot(chatBotDatas.id);
   console.log("voici l'id du chatbot récupéré : "+chatBotDatas.id);
-  console.log("\n");
   console.log(cB);
 
   //est-ce que le brain a changé ?
