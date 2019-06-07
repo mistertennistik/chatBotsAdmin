@@ -118,7 +118,7 @@ app.put('/connect/:id', cors(corsOptions), function(req,res){
   res.setHeader('Content-Type', 'application/json');
     if(req.is('json')) //on devrait toujours tester le type et aussi la taille!
     {
-        let cB = chatbots.getChatBot(req.body.id);
+        let cB = chatbots.getChatBot(parseInt(req.params.id));
         connect(cB);
         if(undefined==chatbot){
           res.send(404, 'Page introuvable !');
@@ -141,7 +141,7 @@ app.put('/disconnect/:id', cors(corsOptions), function(req,res){
     if(req.is('json')) //on devrait toujours tester le type et aussi la taille!
     {
 
-        let cB = chatbots.getChatBot(req.body.id);
+        let cB = chatbots.getChatBot(parseInt(req.params.id));
         disconnect(cB);
         if(undefined==chatbot){
           res.send(404, 'Page introuvable !');
@@ -400,7 +400,7 @@ function connect(cB){
   });
 }
 
-function disconnect(){
+function disconnect(cB){
   cB.interfaces.forEach((item, index, array)=>{
       if(item instanceof IntDiscord){
         item.fermer();

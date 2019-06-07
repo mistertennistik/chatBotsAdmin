@@ -175,24 +175,26 @@ function beforeDeleteBot(){
 }
 
 function connectBot(){
+  console.log('on connectBOt');
   let id = document.getElementById('input_botID').value;
   if(invocation){
     invocation.open('PUT', connectBotURL+id, true);
     invocation.setRequestHeader('Content-Type', 'application/json');
     invocation.onreadystatechange = handler;
-    //invocation.send(JSON.stringify(botToPost));
+    invocation.send(JSON.stringify(botToPost));
   }else{
     console.error("No Invocation TookPlace At All");
   }
 }
 
 function disconnectBot(){
+   console.log('on dicconnectBOt');
   let id = document.getElementById('input_botID').value;
   if(invocation){
     invocation.open('PUT', disconnectBotURL+id, true);
     invocation.setRequestHeader('Content-Type', 'application/json');
     invocation.onreadystatechange = handler;
-    //invocation.send(JSON.stringify(botToPost));
+    invocation.send(JSON.stringify(botToPost));
   }else{
     console.error("No Invocation TookPlace At All");
   }

@@ -25,6 +25,9 @@ class InterfaceRiveScript{
 		return rs.reply(user, message);
 	}
 
+	reinit(){
+		rs = new RiveScript();
+	}
 
 }
 
