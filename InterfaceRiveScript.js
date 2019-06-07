@@ -8,6 +8,7 @@ class InterfaceRiveScript{
 	constructor(brain){
 		// brain est une string de la forme "./brain1.rive"
 		// c'est le cerveau qui va être utilisé
+		this.reinit();
 		rs.loadFile(brain).then(loading_done).catch(loading_error);
 
 		function loading_done (batch_num) {
