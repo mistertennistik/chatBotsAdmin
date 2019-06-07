@@ -99,7 +99,7 @@ app.put('/chatbot/:id', cors(corsOptions), function(req, res) {
 });
 
 app.delete('/chatbot/:id', cors(corsOptions),function(req, res) {
-  console.log("!*!*!*!*!*! updating token : ")
+  console.log("updating token")
   updateTokens(chatbots.getChatBot(parseInt(req.params.id)));
   let id = chatbots.deleteChatBot(parseInt(req.params.id));
 	console.log("delete "+id+" "+req.params.id+" hop");
@@ -204,18 +204,18 @@ function getBrainPath(brainFromBody){
 }
 
 function updateTokens(chatbot){
-  console.log("\nEtat actuel des listes");
+  console.log("Etat avant update des listes usedToken et availabletoken");
   console.log(usedToken);
   console.log(availabletoken);
   let tokenTmp;
   chatbot.interfaces.forEach(function(element){
     if (element instanceof IntDiscord){
       tokenTmp = element.token;
-      console.log("=======>>> This is the token"+tokenTmp);  
+      console.log("=======>>> This is the token : "+tokenTmp);  
       fromUsedToAvailable(tokenTmp);    
     }
   });
-  console.log("\nEtat des listes en fin de procédure");
+  console.log("Etat des listes après update");
   console.log(usedToken);
   console.log(availabletoken);
 
@@ -258,6 +258,8 @@ async function initChatBotAndInterfaces(chatBotDatas){
     //il y aura autant d'embranchements que d'interfaces disponibles
     if(item == "Discord"){
       let tok = nextAvailableToken();
+      console.log("Discord => voici le token utilisé pour le bot : "+tok);
+      console.log("il en reste "+availabletoken.length+" encore disponibles");
       let discInt = await new IntDiscord(tok, cerv) // ne pas oublier nom
       discInt.init();
       await listInterfacesToPush.push(discInt);
@@ -287,7 +289,7 @@ async function updateChatbot(chatBotDatas){
 
   //on récupère le chatbot du mock
   let cB = chatbots.getChatBot(chatBotDatas.id);
-  console.log("voici le id du chatbot récupéré : "+chatBotDatas.id);
+  console.log("voici l'id du chatbot récupéré : "+chatBotDatas.id);
   console.log("\n");
   console.log(cB);
 
@@ -327,6 +329,9 @@ async function updateChatbot(chatBotDatas){
       wantDiscord = true;
       if(!hasPreviousDiscord){
         let tokTmp = nextAvailableToken(); //on estime qu'il y a assez de token libre
+        console.log("Discord => voici le token utilisé pour le bot : "+tokTmp);
+        console.log("il en reste "+availabletoken.length+" encore disponibles");
+        console.log(availabletoken);
         let discInt = await new IntDiscord(tokTmp, cB.cerveau) // ne pas oublier nom
         discInt.init();
         await cB.interfaces.push(discInt);
